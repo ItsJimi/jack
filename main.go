@@ -1,22 +1,18 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"net/http"
-	"html/template"
+	"strconv"
 )
 
-func indexHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "{ message: 'Hey !' }")
-	fmt.Print(r)
-}
-
-func testHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "{ test: true }")
-}
-
 func main() {
-	http.HandleFunc("/", indexHandler)
-	http.HandleFunc("/test", testHandler)
-	http.ListenAndServe(":8080", nil)
+	port := flag.Int("port", 8080, "Port")
+	path := flag.String("path", ".", "Directory")
+
+	flag.Parse()
+
+	fmt.Printf("Start on %d\n", *port)
+	http.ListenAndServe(":"+strconv.Itoa(*port), http.FileServer(http.Dir(*path)))
 }
