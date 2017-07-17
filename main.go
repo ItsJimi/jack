@@ -1,35 +1,39 @@
 package main
 
 import (
+	"encoding/json"
+	"flag"
+	"fmt"
 	"io/ioutil"
 	"log"
-
-	yaml "gopkg.in/yaml.v2"
+	"net/http"
+	"strconv"
 )
 
 type config struct {
-	Port int64  `yaml:"port"`
-	Path string `yaml:"path"`
+	Port int64  `json:"port"`
+	Path string `json:"path"`
 }
 
 func main() {
 	c := config{}
 
-	yamlFile, err := ioutil.ReadFile(".serve.yml")
+	configFile, err := ioutil.ReadFile(".serve.json")
 	if err != nil {
 		log.Print(err)
 		return
 	}
-	err = yaml.Unmarshal(yamlFile, c)
+	err = json.Unmarshal(configFile, &c)
 	if err != nil {
 		log.Fatalf("Unmarshal: %v", err)
 	}
-	log.Print(yamlFile)
-	// port := flag.Int("port", 8080, "Port")
-	// path := flag.String("path", ".", "Directory")
+	log.Print(c.Path)
 
-	// flag.Parse()
+	port := flag.Int("port", 8080, "Port")
+	path := flag.String("path", ".", "Directory")
 
-	// fmt.Printf("Start on %d\n", *port)
-	// http.ListenAndServe(":"+strconv.Itoa(*port), http.FileServer(http.Dir(*path)))
+	flag.Parse()
+
+	fmt.Printf("Start on %d\n", *port)
+	http.ListenAndServe(":"+strconv.Itoa(*port), http.FileServer(http.Dir(*path)))
 }
