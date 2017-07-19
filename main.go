@@ -11,28 +11,29 @@ import (
 )
 
 type config struct {
-	Port int64  `json:"port"`
+	Port int    `json:"port"`
 	Path string `json:"path"`
 }
 
 func main() {
-	c := config{}
+	c := &config{8080, "."}
 
 	configFile, err := ioutil.ReadFile(".serve.json")
-	if err != nil {
-		log.Print(err)
-		return
+	if err == nil {
+		err = json.Unmarshal(configFile, &c)
+		if err != nil {
+			log.Fatalf("Unmarshal: %v", err)
+		}
 	}
-	err = json.Unmarshal(configFile, &c)
-	if err != nil {
-		log.Fatalf("Unmarshal: %v", err)
-	}
-	log.Print(c.Path)
 
-	port := flag.Int("port", 8080, "Port")
-	path := flag.String("path", ".", "Directory")
+	port := flag.Int("port", c.Port, "Port")
+	path := flag.String("path", c.Path, "Directory")
 
 	flag.Parse()
+
+	if *port <= 0 || *port >= 65535 {
+		log.Fatalf("Invalid port")
+	}
 
 	fmt.Printf("Start on %d\n", *port)
 	http.ListenAndServe(":"+strconv.Itoa(*port), http.FileServer(http.Dir(*path)))
