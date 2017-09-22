@@ -1,5 +1,5 @@
 # Serve
-🍽 Serve static files
+🍽 Serve static files by one simple command
 
 ## Install
 ```shell
