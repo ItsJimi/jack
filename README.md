@@ -1,5 +1,5 @@
 # Serve
-Serve static files
+🍽 Serve static files
 
 ## Install
 ```shell
@@ -8,13 +8,14 @@ go get -u github.com/itsjimi/serve
 
 ## Usage
 ```shell
-serve -port="8080" -path="."
+serve -addr="0.0.0.0" -port="8080" -path="."
 ```
 
 ## Config file
 You can create a `.serve.json` in a directory to load a configuration instead of flags
 ```json
 {
+  "addr": "127.0.0.1",
   "port": 1234,
   "path": "./"
 }

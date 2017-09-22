@@ -19,7 +19,7 @@ type config struct {
 }
 
 func main() {
-	c := &config{"", 8080, "."}
+	c := &config{"0.0.0.0", 8080, "."}
 
 	configFile, err := ioutil.ReadFile(".serve.json")
 	if err == nil {
