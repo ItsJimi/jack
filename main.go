@@ -8,15 +8,18 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+
+	"golang.org/x/net/http2"
 )
 
 type config struct {
+	Addr string `json:"addr"`
 	Port int    `json:"port"`
 	Path string `json:"path"`
 }
 
 func main() {
-	c := &config{8080, "."}
+	c := &config{"", 8080, "."}
 
 	configFile, err := ioutil.ReadFile(".serve.json")
 	if err == nil {
@@ -26,6 +29,7 @@ func main() {
 		}
 	}
 
+	addr := flag.String("addr", c.Addr, "Address")
 	port := flag.Int("port", c.Port, "Port")
 	path := flag.String("path", c.Path, "Directory")
 
@@ -35,6 +39,11 @@ func main() {
 		log.Fatalf("Invalid port")
 	}
 
-	fmt.Printf("Start on %d\n", *port)
-	http.ListenAndServe(":"+strconv.Itoa(*port), http.FileServer(http.Dir(*path)))
+	srv := &http.Server{
+		Addr:    *addr + ":" + strconv.Itoa(*port),
+		Handler: http.FileServer(http.Dir(*path)),
+	}
+	fmt.Printf("Start on %s:%d\n", *addr, *port)
+	http2.ConfigureServer(srv, &http2.Server{})
+	log.Fatal(srv.ListenAndServe())
 }
