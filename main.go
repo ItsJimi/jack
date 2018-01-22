@@ -19,10 +19,10 @@ type config struct {
 	Path string `json:"path"`
 }
 
-func serve(cliContext *cli.Context) error {
+func serve(ctx *cli.Context) error {
 	var c config
 
-	configFile, err := ioutil.ReadFile(cliContext.GlobalString("config"))
+	configFile, err := ioutil.ReadFile(ctx.GlobalString("config"))
 	if err == nil {
 		err = json.Unmarshal(configFile, &c)
 		if err != nil {
@@ -30,19 +30,25 @@ func serve(cliContext *cli.Context) error {
 		}
 	}
 
-	path := cliContext.String("path")
-	addr := cliContext.String("addr")
-	port := cliContext.Int("port")
+	if c.Path != "" {
+		ctx.Set("path", c.Path)
+	}
+	if c.Addr != "" {
+		ctx.Set("addr", c.Addr)
+	}
+	if c.Port != 0 {
+		ctx.Set("port", strconv.Itoa(c.Port))
+	}
 
-	if port <= 0 || port >= 65535 {
+	if ctx.Int("port") <= 1024 || ctx.Int("port") >= 65535 {
 		log.Fatalf("Invalid port")
 	}
 
 	srv := &http.Server{
-		Addr:    addr + ":" + strconv.Itoa(port),
-		Handler: http.FileServer(http.Dir(path)),
+		Addr:    ctx.String("addr") + ":" + ctx.String("port"),
+		Handler: http.FileServer(http.Dir(ctx.String("path"))),
 	}
-	fmt.Printf("Start on %s:%d\n", addr, port)
+	fmt.Printf("Start on %s:%d\n", ctx.String("addr"), ctx.Int("port"))
 	http2.ConfigureServer(srv, &http2.Server{})
 	log.Fatal(srv.ListenAndServe())
 
@@ -52,8 +58,8 @@ func serve(cliContext *cli.Context) error {
 func main() {
 	app := cli.NewApp()
 	app.Name = "jack"
-	app.Usage = "amazing tool for web development"
-	app.Version = "0.0.1"
+	app.Usage = "amazing web develoment tool"
+	app.Version = "0.1.1"
 
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
