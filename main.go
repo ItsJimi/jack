@@ -58,7 +58,7 @@ func serve(ctx *cli.Context) error {
 func main() {
 	app := cli.NewApp()
 	app.Name = "Jack"
-	app.Usage = "🏗 Amazing web development tool"
+	app.Usage = "🏗  Amazing web development tool"
 	app.Version = "0.1.1"
 
 	app.Flags = []cli.Flag{
