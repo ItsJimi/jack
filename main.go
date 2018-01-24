@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -55,6 +56,18 @@ func serve(ctx *cli.Context) error {
 	return nil
 }
 
+func connect(ctx *cli.Context) error {
+	scanner := bufio.NewScanner(os.Stdin)
+	scanner.Split(bufio.ScanWords)
+	for {
+		fmt.Print("> ")
+		scanner.Scan()
+		fmt.Println(scanner.Text())
+	}
+
+	return nil
+}
+
 func main() {
 	app := cli.NewApp()
 	app.Name = "Jack"
@@ -97,9 +110,7 @@ func main() {
 			Name:    "connect",
 			Aliases: []string{"c"},
 			Usage:   "connect to websocket server",
-			Action: func(c *cli.Context) error {
-				return nil
-			},
+			Action:  connect,
 		},
 	}
 
