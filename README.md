@@ -3,7 +3,7 @@
 
 ## Install
 ```shell
-go get -u github.com/itsjimi/jack
+go install github.com/itsjimi/jack@latest
 ```
 
 ## Usage
